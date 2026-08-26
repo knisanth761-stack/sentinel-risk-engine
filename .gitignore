@@ -1,0 +1,12 @@
+node_modules/
+.env
+__pycache__/
+*.pyc
+
+# Large datasets
+data/*.csv
+data/processed/*.csv
+
+# ML artifacts
+*.pkl
+*.joblib
