@@ -1,0 +1,6 @@
+fastapi==0.141.1
+pandas==3.0.5
+pydantic==2.13.4
+shap==0.52.0
+uvicorn==0.52.4
+xgboost==3.4.1

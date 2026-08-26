@@ -10,6 +10,21 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: sentinel
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d sentinel"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -20,8 +35,53 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Install dependencies
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Node dependencies
         run: npm ci
 
+      - name: Install Python dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Initialize database
+        env:
+          PGPASSWORD: postgres
+        run: psql -h localhost -U postgres -d sentinel -f db/schema.sql
+
+      - name: Start ML service
+        run: |
+          uvicorn ml.api:app --host 0.0.0.0 --port 8000 > ml.log 2>&1 &
+          sleep 5
+          curl --fail http://localhost:8000/health
+
+      - name: Start Node API
+        env:
+          DB_USER: postgres
+          DB_HOST: localhost
+          DB_NAME: sentinel
+          DB_PASSWORD: postgres
+          DB_PORT: 5432
+        run: |
+          node src/server.js > server.log 2>&1 &
+          sleep 5
+          curl --fail http://localhost:3000/health
+
       - name: Run automated tests
+        env:
+          DB_USER: postgres
+          DB_HOST: localhost
+          DB_NAME: sentinel
+          DB_PASSWORD: postgres
+          DB_PORT: 5432
         run: npm test
+
+      - name: Show service logs on failure
+        if: failure()
+        run: |
+          echo "===== Node API ====="
+          cat server.log || true
+          echo "===== ML API ====="
+          cat ml.log || true
