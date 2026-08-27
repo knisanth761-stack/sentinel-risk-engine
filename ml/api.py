@@ -42,11 +42,13 @@ def build_features(tx: Transaction):
         tx.amount / (tx.oldbalanceDest + 1)
     )
 
-    orig_balance_error = abs(
+    # MUST match ml/create_splits.py exactly.
+    # These are signed errors, not absolute values.
+    orig_balance_error = (
         tx.oldbalanceOrg - tx.amount - tx.newbalanceOrig
     )
 
-    dest_balance_error = abs(
+    dest_balance_error = (
         tx.oldbalanceDest + tx.amount - tx.newbalanceDest
     )
 
@@ -75,7 +77,9 @@ def build_features(tx: Transaction):
 def health():
     return {
         "status": "ok",
-        "model": "XGBoost"
+        "model": "XGBoost",
+        "features": len(model.get_booster().feature_names),
+        "trees": model.get_booster().num_boosted_rounds()
     }
 
 
