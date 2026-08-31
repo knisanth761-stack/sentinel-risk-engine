@@ -1,12 +1,44 @@
+# Node
 node_modules/
+**/node_modules/
+
+# Environment secrets
 .env
+.env.*
+!.env.example
+
+# Python
+.venv/
+venv/
 __pycache__/
 *.pyc
+.pytest_cache/
+
+# Frontend build output
+dist/
+**/dist/
 
 # Large datasets
 data/*.csv
 data/processed/*.csv
 
-# ML artifacts
+# ML artifacts (except the committed JSON production model)
 *.pkl
 *.joblib
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Temporary / backup files
+*.backup
+*.bak
+*.before-*
+*~
+
+# Runtime logs
+*.log
+
+# Local datasets and generated training data
+data/

@@ -1,57 +1,67 @@
 import pandas as pd
 import xgboost as xgb
 
+from sklearn.metrics import confusion_matrix
+
 TEST_PATH = "data/processed/test.csv"
+MODEL_PATH = "ml/xgboost_fraud_model.json"
 
-REMOVE_FEATURES = [
-    "balance_change_orig",
-    "balance_change_dest",
-    "orig_balance_error",
-    "dest_balance_error"
-]
+# Must match the deployed evaluation operating point
+THRESHOLD = 0.50
 
-THRESHOLD = 0.99
+print("=" * 65)
+print("       SENTINEL — DEPLOYED MODEL BUSINESS IMPACT")
+print("=" * 65)
 
-print("Loading test data...")
+# --------------------------------------------------
+# Load untouched held-out test data
+# --------------------------------------------------
+
+print("\nLoading held-out test data...")
 test = pd.read_csv(TEST_PATH)
 
-X_test = test.drop(
-    columns=["isFraud"] + REMOVE_FEATURES
-)
+# --------------------------------------------------
+# Load EXACT deployed production artifact
+# --------------------------------------------------
 
+print("Loading deployed model artifact...")
+
+model = xgb.XGBClassifier()
+model.load_model(MODEL_PATH)
+
+features = model.get_booster().feature_names
+
+print("\nMODEL ARTIFACT")
+print("-" * 65)
+print("Path     :", MODEL_PATH)
+print("Features :", len(features))
+print("Trees    :", model.get_booster().num_boosted_rounds())
+
+# --------------------------------------------------
+# Verify feature compatibility
+# --------------------------------------------------
+
+missing = [f for f in features if f not in test.columns]
+
+if missing:
+    raise ValueError(
+        f"Test dataset is missing model features: {missing}"
+    )
+
+X_test = test[features]
 y_test = test["isFraud"]
 
-# Recreate the same model configuration
-train = pd.read_csv("data/processed/train.csv")
+print("\nTEST DATA")
+print("-" * 65)
+print("Transactions :", f"{len(test):,}")
+print("Fraud cases  :", f"{int(y_test.sum()):,}")
+print("Fraud rate   :", f"{y_test.mean():.6%}")
 
-X_train = train.drop(
-    columns=["isFraud"] + REMOVE_FEATURES
-)
+# --------------------------------------------------
+# Predict using EXACT deployed artifact
+# --------------------------------------------------
 
-y_train = train["isFraud"]
-
-scale_pos_weight = (
-    (y_train == 0).sum() /
-    (y_train == 1).sum()
-)
-
-model = xgb.XGBClassifier(
-    n_estimators=400,
-    max_depth=6,
-    learning_rate=0.08,
-    subsample=0.8,
-    colsample_bytree=0.8,
-    min_child_weight=5,
-    objective="binary:logistic",
-    eval_metric="aucpr",
-    scale_pos_weight=scale_pos_weight,
-    tree_method="hist",
-    n_jobs=-1,
-    random_state=42
-)
-
-print("Training model...")
-model.fit(X_train, y_train, verbose=False)
+print("\nGenerating predictions...")
 
 probabilities = model.predict_proba(X_test)[:, 1]
 
@@ -59,117 +69,220 @@ predictions = (
     probabilities >= THRESHOLD
 ).astype(int)
 
-test = test.copy()
-test["prediction"] = predictions
+# --------------------------------------------------
+# Attach predictions
+# --------------------------------------------------
 
-# -----------------------------
+results = test.copy()
+results["fraud_probability"] = probabilities
+results["prediction"] = predictions
+
+# --------------------------------------------------
+# Confusion matrix
+# --------------------------------------------------
+
+tn, fp, fn, tp = confusion_matrix(
+    y_test,
+    predictions
+).ravel()
+
+# --------------------------------------------------
 # Business categories
-# -----------------------------
+# --------------------------------------------------
 
-true_fraud = test[test["isFraud"] == 1]
-
-detected_fraud = test[
-    (test["isFraud"] == 1) &
-    (test["prediction"] == 1)
+true_fraud = results[
+    results["isFraud"] == 1
 ]
 
-missed_fraud = test[
-    (test["isFraud"] == 1) &
-    (test["prediction"] == 0)
+detected_fraud = results[
+    (results["isFraud"] == 1) &
+    (results["prediction"] == 1)
 ]
 
-false_positives = test[
-    (test["isFraud"] == 0) &
-    (test["prediction"] == 1)
+missed_fraud = results[
+    (results["isFraud"] == 1) &
+    (results["prediction"] == 0)
 ]
 
-legitimate = test[test["isFraud"] == 0]
+false_positives = results[
+    (results["isFraud"] == 0) &
+    (results["prediction"] == 1)
+]
 
-# -----------------------------
+legitimate = results[
+    results["isFraud"] == 0
+]
+
+# --------------------------------------------------
 # Amount impact
-# -----------------------------
+# --------------------------------------------------
 
 total_fraud_amount = true_fraud["amount"].sum()
-detected_fraud_amount = detected_fraud["amount"].sum()
-missed_fraud_amount = missed_fraud["amount"].sum()
-false_positive_amount = false_positives["amount"].sum()
-legitimate_amount = legitimate["amount"].sum()
 
-fraud_prevention_rate = (
+detected_fraud_amount = (
+    detected_fraud["amount"].sum()
+)
+
+missed_fraud_amount = (
+    missed_fraud["amount"].sum()
+)
+
+false_positive_amount = (
+    false_positives["amount"].sum()
+)
+
+# --------------------------------------------------
+# Business metrics
+# --------------------------------------------------
+
+fraud_amount_prevention_rate = (
     detected_fraud_amount / total_fraud_amount
     if total_fraud_amount > 0 else 0
 )
 
-fraud_loss_rate = (
+fraud_amount_leakage_rate = (
     missed_fraud_amount / total_fraud_amount
     if total_fraud_amount > 0 else 0
 )
 
-false_positive_rate = (
-    len(false_positives) / len(legitimate)
+legitimate_false_positive_rate = (
+    fp / len(legitimate)
+    if len(legitimate) > 0 else 0
 )
 
-print("\n==============================================")
-print("        SENTINEL BUSINESS IMPACT")
-print("==============================================")
+# --------------------------------------------------
+# Report
+# --------------------------------------------------
 
-print(f"Threshold                    : {THRESHOLD}")
+print("\n" + "=" * 65)
+print("              BUSINESS IMPACT RESULTS")
+print("=" * 65)
 
-print("\nTRANSACTION COUNTS")
-print("----------------------------------------------")
-print(f"Total transactions           : {len(test):,}")
-print(f"Actual fraud                 : {len(true_fraud):,}")
-print(f"Fraud detected               : {len(detected_fraud):,}")
-print(f"Fraud missed                 : {len(missed_fraud):,}")
-print(f"False positives              : {len(false_positives):,}")
-print(f"Legitimate transactions      : {len(legitimate):,}")
+print(f"\nOperating threshold : {THRESHOLD:.2f}")
 
-print("\nAMOUNT IMPACT")
-print("----------------------------------------------")
-print(f"Total fraud exposure         : ₹{total_fraud_amount:,.2f}")
-print(f"Fraud amount detected        : ₹{detected_fraud_amount:,.2f}")
-print(f"Fraud amount missed          : ₹{missed_fraud_amount:,.2f}")
-print(f"Legitimate amount flagged    : ₹{false_positive_amount:,.2f}")
+print("\nTRANSACTION OUTCOMES")
+print("-" * 65)
+
+print(f"Total transactions      : {len(results):,}")
+print(f"Actual fraud            : {len(true_fraud):,}")
+print(f"Fraud detected          : {len(detected_fraud):,}")
+print(f"Fraud missed            : {len(missed_fraud):,}")
+print(f"False positives         : {len(false_positives):,}")
+print(f"Legitimate transactions : {len(legitimate):,}")
+
+print("\nCONFUSION MATRIX")
+print("-" * 65)
+
+print(f"True Negative  : {tn:,}")
+print(f"False Positive : {fp:,}")
+print(f"False Negative : {fn:,}")
+print(f"True Positive  : {tp:,}")
+
+print("\nFRAUD AMOUNT IMPACT")
+print("-" * 65)
+
+print(
+    f"Total fraud exposure      : "
+    f"₹{total_fraud_amount:,.2f}"
+)
+
+print(
+    f"Fraud amount detected     : "
+    f"₹{detected_fraud_amount:,.2f}"
+)
+
+print(
+    f"Fraud amount missed       : "
+    f"₹{missed_fraud_amount:,.2f}"
+)
+
+print(
+    f"Legitimate amount flagged : "
+    f"₹{false_positive_amount:,.2f}"
+)
 
 print("\nBUSINESS RATES")
-print("----------------------------------------------")
+print("-" * 65)
+
 print(
     f"Fraud amount prevention rate : "
-    f"{fraud_prevention_rate:.4%}"
+    f"{fraud_amount_prevention_rate:.4%}"
 )
 
 print(
     f"Fraud amount leakage rate    : "
-    f"{fraud_loss_rate:.4%}"
+    f"{fraud_amount_leakage_rate:.4%}"
 )
 
 print(
-    f"Legitimate FP rate           : "
-    f"{false_positive_rate:.4%}"
+    f"Legitimate false positive rate : "
+    f"{legitimate_false_positive_rate:.6%}"
 )
 
-print("\n==============================================")
-print("INTERPRETATION")
-print("==============================================")
+print("\nFALSE-POSITIVE COST OBSERVATION")
+print("-" * 65)
+
+if fp == 0:
+    print(
+        "Observed false-positive transaction count : 0"
+    )
+    print(
+        "Observed legitimate amount incorrectly "
+        "flagged : ₹0.00"
+    )
+    print(
+        "Observed direct false-positive intervention "
+        "cost on this held-out evaluation set : ₹0.00"
+    )
+else:
+    print(
+        f"Legitimate transactions incorrectly "
+        f"flagged : {fp:,}"
+    )
+    print(
+        f"Legitimate transaction value affected : "
+        f"₹{false_positive_amount:,.2f}"
+    )
+
+print("\n" + "=" * 65)
+print("                 INTERPRETATION")
+print("=" * 65)
 
 print(
-    f"Sentinel detected "
-    f"{len(detected_fraud):,} of "
-    f"{len(true_fraud):,} fraudulent transactions."
+    f"\nUsing the exact deployed model artifact at "
+    f"threshold {THRESHOLD:.2f}:"
 )
 
 print(
-    f"₹{detected_fraud_amount:,.2f} of the "
-    f"₹{total_fraud_amount:,.2f} fraud exposure "
-    f"was detected."
+    f"• Sentinel detected {tp:,} of {int(y_test.sum()):,} "
+    f"fraudulent transactions."
 )
 
 print(
-    f"₹{missed_fraud_amount:,.2f} of fraud exposure "
+    f"• ₹{detected_fraud_amount:,.2f} of "
+    f"₹{total_fraud_amount:,.2f} total fraud exposure "
+    f"was identified."
+)
+
+print(
+    f"• ₹{missed_fraud_amount:,.2f} of fraud exposure "
     f"was missed."
 )
 
 print(
-    f"{len(false_positives):,} legitimate transactions "
-    f"were incorrectly flagged."
+    f"• {fp:,} legitimate transactions were incorrectly "
+    f"flagged."
 )
+
+print("\nARTIFACT VERIFICATION")
+print("-" * 65)
+
+print("Saved artifact loaded directly : YES")
+print("Model retrained                : NO")
+print("Held-out test set              : YES")
+print("Feature order from artifact    : YES")
+print("Production model evaluated     : YES")
+
+print("\n" + "=" * 65)
+print("           BUSINESS IMPACT COMPLETE")
+print("=" * 65)

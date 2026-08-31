@@ -148,17 +148,19 @@ function explainRisk(rules, ml, fusion) {
    * ============================================================
    */
 
-  let summary = "Transaction appears low risk.";
+   let summary = "Transaction appears low risk.";
 
-  if (fusion.decision === "REVIEW") {
-    summary =
-      "Transaction requires additional review.";
-  }
+   if (fusion.decision === "REVIEW") {
+      summary = "Transaction requires additional review.";
+   }
 
-  if (fusion.decision === "BLOCK") {
-    summary =
-      "High-risk transaction detected.";
-  }
+   if (fusion.decision === "SUSPICIOUS") {
+      summary = "Transaction shows elevated risk and requires scrutiny.";
+   }
+
+   if (fusion.decision === "BLOCK") {
+      summary = "High-risk transaction detected and blocked.";
+   }
 
   /*
    * ============================================================

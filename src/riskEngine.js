@@ -60,6 +60,13 @@ function calculateRisk(transaction, recentTransactions = []) {
 
     const averageAmount =
       totalAmount / recentTransactions.length;
+    console.log("BEHAVIOR DEBUG:", {
+       currentAmount: amount,
+       recentCount: recentTransactions.length,
+       recentAmounts: recentTransactions.map(tx => Number(tx.amount)),
+       averageAmount,
+       requiredAmount: averageAmount * 5
+   });
 
     if (
       averageAmount > 0 &&

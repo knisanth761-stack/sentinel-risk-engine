@@ -1,11 +1,25 @@
 require("dotenv").config();
 const express = require("express");
 
-const { pool, getRecentTransactions } = require("./database");
+const {
+  pool,
+  getRecentTransactions,
+  updateTransactionOutcome,
+  getTransactionHistory
+} = require("./database");
 const calculateRisk = require("./riskEngine");
 const calculateFinalRisk = require("./riskFusion");
 const explainRisk = require("./explanationEngine");
 const validateTransaction = require("./validateTransaction");
+const {
+  getModelTelemetry,
+  recordTransactionTelemetry,
+  updateServiceTelemetry
+} = require("./modelTelemetry");
+
+const ML_SERVICE_URL =
+  process.env.ML_SERVICE_URL ||
+  "http://localhost:8000";
 
 const app = express();
 
@@ -26,11 +40,67 @@ app.get("/health", (req, res) => {
 
 /*
  * ============================================================
+ * MODEL TELEMETRY
+ * ============================================================
+ *
+ * Read-only. Combines live artifact metadata (derived from the
+ * deployed ml/xgboost_fraud_model.json on disk) with verified,
+ * static held-out test evaluation results (see src/modelTelemetry.js
+ * for full provenance). Does not touch the transaction pipeline,
+ * the ML service, or the model artifact.
+ */
+
+app.get("/model/telemetry", (req, res) => {
+  try {
+    return res.status(200).json(getModelTelemetry());
+  } catch (error) {
+    console.error("Failed to load model telemetry:", error.message);
+
+    return res.status(500).json({
+      message: "Failed to load model telemetry",
+      error: error.message
+    });
+  }
+});
+
+/*
+ * ============================================================
+ * PERSISTED TRANSACTION HISTORY
+ * ============================================================
+ */
+
+app.get("/transactions/history", async (req, res) => {
+  try {
+    const limit = req.query.limit || 100;
+
+    const transactions = await getTransactionHistory(limit);
+
+    return res.status(200).json({
+      transactions,
+      count: transactions.length
+    });
+  } catch (error) {
+    console.error(
+      "Failed to fetch transaction history:",
+      error.message
+    );
+
+    return res.status(500).json({
+      message: "Failed to fetch transaction history",
+      error: error.message
+    });
+  }
+});
+
+
+/*
+ * ============================================================
  * TRANSACTION PROCESSING
  * ============================================================
  */
 
 app.post("/transactions", async (req, res) => {
+  const requestStartedAt = performance.now();
   const transaction = req.body;
 
   console.log("Received transaction:", transaction);
@@ -84,6 +154,10 @@ app.post("/transactions", async (req, res) => {
       ]
     );
 
+    updateServiceTelemetry({
+      databaseAvailable: true
+    });
+
     /*
      * 4. Fetch recent transactions
      */
@@ -125,7 +199,7 @@ app.post("/transactions", async (req, res) => {
 
     try {
       const mlResponse = await fetch(
-        "http://localhost:8000/predict",
+        `${ML_SERVICE_URL}/predict`,
         {
           method: "POST",
           headers: {
@@ -167,12 +241,35 @@ app.post("/transactions", async (req, res) => {
 
       console.log("ML result:", prediction);
 
+      updateServiceTelemetry({
+        mlServiceAvailable: true
+      });
+
     } catch (mlError) {
 
       console.error(
         "ML Risk Service unavailable:",
         mlError.message
       );
+
+      updateServiceTelemetry({
+        mlServiceAvailable: false
+      });
+
+      // Persist failure so the transaction is not left stuck
+      // in PROCESSING state.
+      await updateTransactionOutcome(
+        transaction.transactionId,
+        {
+          processingStatus: "FAILED",
+          failureReason: `ML Risk Service unavailable: ${mlError.message}`
+        }
+      );
+
+      recordTransactionTelemetry({
+        latencyMs: performance.now() - requestStartedAt,
+        success: false
+      });
 
       return res.status(503).json({
         message:
@@ -216,7 +313,34 @@ app.post("/transactions", async (req, res) => {
     );
 
     /*
-     * 10. Final response
+     * 10. Persist final transaction outcome
+     */
+
+    await updateTransactionOutcome(
+      transaction.transactionId,
+      {
+        processingStatus: "COMPLETED",
+        ruleRiskScore: riskResult.riskScore,
+        mlProbability: mlResult.fraudProbability,
+        finalRiskScore: fusionResult.finalRiskScore,
+        decision: fusionResult.decision,
+        signals: riskResult.signals,
+        explanation
+      }
+    );
+
+    /*
+     * 11. Runtime telemetry
+     */
+
+    recordTransactionTelemetry({
+      decision: fusionResult.finalDecision || fusionResult.decision,
+      latencyMs: performance.now() - requestStartedAt,
+      success: true
+    });
+
+    /*
+     * 11. Final response
      */
 
     return res.status(200).json({
@@ -235,6 +359,34 @@ app.post("/transactions", async (req, res) => {
       "Transaction processing failed:",
       error.message
     );
+
+    if (error.code) {
+      updateServiceTelemetry({
+        databaseAvailable: false
+      });
+    }
+
+    // Best-effort failure persistence. Do not mask the original
+    // processing error if the database update itself fails.
+    try {
+      await updateTransactionOutcome(
+        transaction.transactionId,
+        {
+          processingStatus: "FAILED",
+          failureReason: error.message
+        }
+      );
+    } catch (persistenceError) {
+      console.error(
+        "Failed to persist transaction failure:",
+        persistenceError.message
+      );
+    }
+
+    recordTransactionTelemetry({
+      latencyMs: performance.now() - requestStartedAt,
+      success: false
+    });
 
     /*
      * Handle PostgreSQL duplicate race condition
@@ -260,7 +412,7 @@ app.post("/transactions", async (req, res) => {
  * ============================================================
  */
 
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 app.listen(PORT, () => {
   console.log(

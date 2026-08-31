@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node --test"
+    "test": "npm run test:unit",
+    "test:unit": "node --test test/riskEngine.test.js test/riskFusion.test.js",
+    "test:integration": "node --test --test-concurrency=1 test/api.test.js test/failureRecovery.test.js"
   },
   "keywords": [],
   "author": "",
