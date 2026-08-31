@@ -1,7 +1,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 
-const calculateRisk = require("../src/riskEngine");
+const calculateRisk = require("../backend/riskEngine");
 
 function tx(overrides = {}) {
   return {

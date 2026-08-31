@@ -45,7 +45,7 @@ app.get("/health", (req, res) => {
  *
  * Read-only. Combines live artifact metadata (derived from the
  * deployed ml/xgboost_fraud_model.json on disk) with verified,
- * static held-out test evaluation results (see src/modelTelemetry.js
+ * static held-out test evaluation results (see backend/modelTelemetry.js
  * for full provenance). Does not touch the transaction pipeline,
  * the ML service, or the model artifact.
  */

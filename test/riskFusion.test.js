@@ -1,7 +1,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 
-const calculateFinalRisk = require("../src/riskFusion");
+const calculateFinalRisk = require("../backend/riskFusion");
 
 test("risk 0 is SAFE", () => {
   const result = calculateFinalRisk(0, 0);

@@ -65,7 +65,7 @@ jobs:
           DB_PASSWORD: postgres
           DB_PORT: 5432
         run: |
-          node src/server.js > server.log 2>&1 &
+          node backend/server.js > server.log 2>&1 &
           sleep 5
           curl --fail http://localhost:3000/health
 

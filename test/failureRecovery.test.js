@@ -42,7 +42,7 @@ async function waitForServer() {
 test.before(async () => {
   serverProcess = spawn(
     "node",
-    ["src/server.js"],
+    ["backend/server.js"],
     {
       cwd: process.cwd(),
       env: {
