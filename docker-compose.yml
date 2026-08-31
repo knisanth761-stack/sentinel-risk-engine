@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: sentinel
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d sentinel"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  ml:
+    build:
+      context: .
+      dockerfile: ml/Dockerfile
+    ports:
+      - "8000:8000"
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DB_USER: postgres
+      DB_HOST: postgres
+      DB_NAME: sentinel
+      DB_PASSWORD: postgres
+      DB_PORT: 5432
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ml:
+        condition: service_started
+
+volumes:
+  postgres_data:
+
