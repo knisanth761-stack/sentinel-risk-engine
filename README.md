@@ -208,3 +208,91 @@ Reasons:
 ![Business Impact](https://github.com/knisanth761-stack/sentinel-risk-engine/raw/main/docs/images/model-intelligence-business-impact.png)
 
 ![Explainability](https://github.com/knisanth761-stack/sentinel-risk-engine/raw/main/docs/images/model-intelligence-explainability.png)
+
+## 🐳 Run with Docker
+
+Sentinel Risk Engine is containerized with Docker Compose and runs as four services:
+
+- **Frontend** — React dashboard on port `5173`
+- **Backend** — Node.js API on port `3000`
+- **ML Service** — Python/XGBoost inference service on port `8000`
+- **PostgreSQL 16** — persistent transaction database on port `5432`
+
+### Prerequisites
+
+- Git
+- Docker
+- Docker Compose
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/knisanth761-stack/sentinel-risk-engine.git
+cd sentinel-risk-engine
+```
+
+### 2. Build and Start the System
+
+```bash
+docker compose up --build
+```
+
+The application will be available at:
+
+| Service | URL |
+|---|---|
+| Frontend Dashboard | `http://localhost:5173` |
+| Backend API | `http://localhost:3000` |
+| ML Service | `http://localhost:8000` |
+| PostgreSQL | `localhost:5432` |
+
+Docker Compose automatically starts PostgreSQL, the ML service, backend, and frontend. The backend waits for the PostgreSQL health check before starting.
+
+### Run in Detached Mode
+
+```bash
+docker compose up --build -d
+```
+
+### View Service Logs
+
+```bash
+docker compose logs -f
+```
+
+### Stop the System
+
+```bash
+docker compose down
+```
+
+### Stop and Remove Persistent Database Data
+
+```bash
+docker compose down -v
+```
+
+> ⚠️ The `-v` option removes the PostgreSQL Docker volume and permanently deletes the local database data.
+
+## 🔄 System Flow
+
+```text
+Transaction Input
+       ↓
+Input Validation
+       ↓
+Duplicate Detection
+       ↓
+Transaction Persistence
+       ↓
+Rule-Based Risk Analysis
+       ↓
+Machine Learning Prediction
+       ↓
+Risk Fusion
+       ↓
+Explainability
+       ↓
+Final Decision
+SAFE / REVIEW / SUSPICIOUS / BLOCK
+```
