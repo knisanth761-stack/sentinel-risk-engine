@@ -20,32 +20,34 @@ The system processes each transaction through a complete risk pipeline and retur
 
 ```text
 SAFE → REVIEW → SUSPICIOUS → BLOCK
+```
 
-✨ Key Features
-1)Real-time transaction risk analysis
-2)Hybrid rule-based + machine-learning fraud detection
-3)Configurable transaction risk signals
-4)Behavioral anomaly detection
-5)Transaction velocity detection
-6)Source balance depletion analysis
-7)Balance consistency checks
-8)High-risk transaction type detection
-9)Risk fusion between rules and ML predictions
-10)Human-readable fraud explanations
-11)SHAP-based ML feature explanations
-12)PostgreSQL transaction persistence
-13)Duplicate transaction detection
-14)ML service failure recovery
-15)Persisted transaction history
-16)Model telemetry and feature importance
-17)Live backend runtime telemetry
-18)Automated unit and integration testing
+## ✨ Key Features
+
+1. Real-time transaction risk analysis
+2. Hybrid rule-based + machine-learning fraud detection
+3. Configurable transaction risk signals
+4. Behavioral anomaly detection
+5. Transaction velocity detection
+6. Source balance depletion analysis
+7. Balance consistency checks
+8. High-risk transaction type detection
+9. Risk fusion between rules and ML predictions
+10. Human-readable fraud explanations
+11. SHAP-based ML feature explanations
+12. PostgreSQL transaction persistence
+13. Duplicate transaction detection
+14. ML service failure recovery
+15. Persisted transaction history
+16. Model telemetry and feature importance
+17. Live backend runtime telemetry
+18. Automated unit and integration testing
 
 ## 🏗️ System Architecture
 
 Sentinel Risk Engine uses a hybrid architecture that combines deterministic rule-based analysis, machine-learning fraud detection, risk fusion, explainability, persistent transaction storage, and a real-time React dashboard.
 
-![Sentinel Risk Engine Architecture](docs/images/Architecture.png)
+![Sentinel Risk Engine Architecture](./docs/images/Architecture.png)
 
 ## 📊 Model Performance & Evaluation
 
@@ -140,12 +142,10 @@ The explanation system can highlight patterns such as:
 
 ### 🔗 Multi-Layer Risk Explanation
 
-The final explanation combines:
-
 **Rule Signals** → Deterministic risk patterns  
 **ML Feature Explanations** → Fraud-driving model features  
 **ML Confidence** → Probability of fraud  
-**Risk Fusion** → Final SAFE / REVIEW / SUSPICIOUS / BLOCK decision  
+**Risk Fusion** → Final SAFE / REVIEW / SUSPICIOUS / BLOCK decision
 
 Duplicate reasons are removed before the final explanation is returned to the user.
 
@@ -159,19 +159,20 @@ Reasons:
 • Transaction consumes almost the entire source account balance
 • Large TRANSFER transaction requires additional scrutiny
 • The machine-learning model assigns a high probability of fraud
+```
 
 ## 🛠️ Technology Stack
 
 | Technology | Role |
 |---|---|
-| <img src="https://raw.githubusercontent.com/knisanth761-stack/sentinel-risk-engine/main/docs/images/stack/react.svg" width="32" height="32"> **React** | Interactive frontend dashboard |
-| <img src="https://raw.githubusercontent.com/knisanth761-stack/sentinel-risk-engine/main/docs/images/stack/vite.svg" width="32" height="32"> **Vite** | Frontend development and build tool |
-| <img src="https://raw.githubusercontent.com/knisanth761-stack/sentinel-risk-engine/main/docs/images/stack/nodejs.svg" width="32" height="32"> **Node.js** | Backend runtime |
-| <img src="https://raw.githubusercontent.com/knisanth761-stack/sentinel-risk-engine/main/docs/images/stack/express.svg" width="32" height="32"> **Express.js** | REST API framework |
-| <img src="https://raw.githubusercontent.com/knisanth761-stack/sentinel-risk-engine/main/docs/images/stack/python.svg" width="32" height="32"> **Python** | Machine-learning service |
+| <img src="https://raw.githubusercontent.com/knisanth761-stack/sentinel-risk-engine/main/docs/images/stack/react.svg" width="32" height="32" alt="React"> **React** | Interactive frontend dashboard |
+| <img src="https://raw.githubusercontent.com/knisanth761-stack/sentinel-risk-engine/main/docs/images/stack/vite.svg" width="32" height="32" alt="Vite"> **Vite** | Frontend development and build tool |
+| <img src="https://raw.githubusercontent.com/knisanth761-stack/sentinel-risk-engine/main/docs/images/stack/nodejs.svg" width="32" height="32" alt="Node.js"> **Node.js** | Backend runtime |
+| <img src="https://raw.githubusercontent.com/knisanth761-stack/sentinel-risk-engine/main/docs/images/stack/express.svg" width="32" height="32" alt="Express.js"> **Express.js** | REST API framework |
+| <img src="https://raw.githubusercontent.com/knisanth761-stack/sentinel-risk-engine/main/docs/images/stack/python.svg" width="32" height="32" alt="Python"> **Python** | Machine-learning service |
 | **XGBoost** | Fraud detection model |
 | **SHAP** | Model explainability |
-| <img src="https://raw.githubusercontent.com/knisanth761-stack/sentinel-risk-engine/main/docs/images/stack/postgresql.svg" width="32" height="32"> **PostgreSQL** | Transaction and risk persistence |
-| <img src="https://raw.githubusercontent.com/knisanth761-stack/sentinel-risk-engine/main/docs/images/stack/docker.svg" width="32" height="32"> **Docker** | Containerization and deployment |
-| <img src="https://raw.githubusercontent.com/knisanth761-stack/sentinel-risk-engine/main/docs/images/stack/git.svg" width="32" height="32"> **Git** | Version control |
-| <img src="https://raw.githubusercontent.com/knisanth761-stack/sentinel-risk-engine/main/docs/images/stack/github.svg" width="32" height="32"> **GitHub** | Repository hosting and collaboration |
+| <img src="https://raw.githubusercontent.com/knisanth761-stack/sentinel-risk-engine/main/docs/images/stack/postgresql.svg" width="32" height="32" alt="PostgreSQL"> **PostgreSQL** | Transaction and risk persistence |
+| <img src="https://raw.githubusercontent.com/knisanth761-stack/sentinel-risk-engine/main/docs/images/stack/docker.svg" width="32" height="32" alt="Docker"> **Docker** | Containerization and deployment |
+| <img src="https://raw.githubusercontent.com/knisanth761-stack/sentinel-risk-engine/main/docs/images/stack/git.svg" width="32" height="32" alt="Git"> **Git** | Version control |
+| <img src="https://raw.githubusercontent.com/knisanth761-stack/sentinel-risk-engine/main/docs/images/stack/github.svg" width="32" height="32" alt="GitHub"> **GitHub** | Repository hosting and collaboration |
