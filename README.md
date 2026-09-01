@@ -176,3 +176,35 @@ Reasons:
 | <img src="https://raw.githubusercontent.com/knisanth761-stack/sentinel-risk-engine/main/docs/images/stack/docker.svg" width="32" height="32" alt="Docker"> **Docker** | Containerization and deployment |
 | <img src="https://raw.githubusercontent.com/knisanth761-stack/sentinel-risk-engine/main/docs/images/stack/git.svg" width="32" height="32" alt="Git"> **Git** | Version control |
 | <img src="https://raw.githubusercontent.com/knisanth761-stack/sentinel-risk-engine/main/docs/images/stack/github.svg" width="32" height="32" alt="GitHub"> **GitHub** | Repository hosting and collaboration |
+
+## 🖥️ Dashboard Screens
+
+### Command Center
+
+![Command Center Overview](https://github.com/knisanth761-stack/sentinel-risk-engine/raw/main/docs/images/command-center-overview.png)
+
+![Command Center Details](https://github.com/knisanth761-stack/sentinel-risk-engine/raw/main/docs/images/command-center-bottom.png)
+
+### Transaction Analysis
+
+![Transaction Analysis](https://github.com/knisanth761-stack/sentinel-risk-engine/raw/main/docs/images/transaction-analysis-overview.png)
+
+![Risk Decision](https://github.com/knisanth761-stack/sentinel-risk-engine/raw/main/docs/images/transaction-analysis-decision.png)
+
+![Risk Explanation](https://github.com/knisanth761-stack/sentinel-risk-engine/raw/main/docs/images/transaction-analysis-explanation.png)
+
+### Risk Events
+
+![Risk Events](https://github.com/knisanth761-stack/sentinel-risk-engine/raw/main/docs/images/risk-events-overview.png)
+
+![Risk Event Details](https://github.com/knisanth761-stack/sentinel-risk-engine/raw/main/docs/images/risk-events-bottom.png)
+
+### Model Intelligence
+
+![Model Intelligence Overview](https://github.com/knisanth761-stack/sentinel-risk-engine/raw/main/docs/images/model-intelligence-overview.png)
+
+![Model Performance](https://github.com/knisanth761-stack/sentinel-risk-engine/raw/main/docs/images/model-intelligence-performance.png)
+
+![Business Impact](https://github.com/knisanth761-stack/sentinel-risk-engine/raw/main/docs/images/model-intelligence-business-impact.png)
+
+![Explainability](https://github.com/knisanth761-stack/sentinel-risk-engine/raw/main/docs/images/model-intelligence-explainability.png)
