@@ -164,16 +164,14 @@ Reasons:
 
 | Technology | Role |
 |---|---|
-| <img src="./docs/images/stack/react.svg" width="32" valign="middle"> **React** | Interactive frontend dashboard |
-| <img src="./docs/images/stack/vite.svg" width="32" valign="middle"> **Vite** | Frontend development and build tool |
-| <img src="./docs/images/stack/nodejs.svg" width="32" valign="middle"> **Node.js** | Backend runtime |
-| <img src="./docs/images/stack/express.svg" width="32" valign="middle"> **Express.js** | REST API framework |
-| <img src="./docs/images/stack/python.svg" width="32" valign="middle"> **Python** | Machine-learning service |
+| <img src="https://raw.githubusercontent.com/knisanth761-stack/sentinel-risk-engine/main/docs/images/stack/react.svg" width="32" height="32"> **React** | Interactive frontend dashboard |
+| <img src="https://raw.githubusercontent.com/knisanth761-stack/sentinel-risk-engine/main/docs/images/stack/vite.svg" width="32" height="32"> **Vite** | Frontend development and build tool |
+| <img src="https://raw.githubusercontent.com/knisanth761-stack/sentinel-risk-engine/main/docs/images/stack/nodejs.svg" width="32" height="32"> **Node.js** | Backend runtime |
+| <img src="https://raw.githubusercontent.com/knisanth761-stack/sentinel-risk-engine/main/docs/images/stack/express.svg" width="32" height="32"> **Express.js** | REST API framework |
+| <img src="https://raw.githubusercontent.com/knisanth761-stack/sentinel-risk-engine/main/docs/images/stack/python.svg" width="32" height="32"> **Python** | Machine-learning service |
 | **XGBoost** | Fraud detection model |
 | **SHAP** | Model explainability |
-| <img src="./docs/images/stack/postgresql.svg" width="32" valign="middle"> **PostgreSQL** | Transaction and risk persistence |
-| <img src="./docs/images/stack/docker.svg" width="32" valign="middle"> **Docker** | Containerization and deployment |
-| <img src="./docs/images/stack/git.svg" width="32" valign="middle"> **Git** | Version control |
-| <img src="./docs/images/stack/github.svg" width="32" valign="middle"> **GitHub** | Repository hosting and collaboration |
-
-
+| <img src="https://raw.githubusercontent.com/knisanth761-stack/sentinel-risk-engine/main/docs/images/stack/postgresql.svg" width="32" height="32"> **PostgreSQL** | Transaction and risk persistence |
+| <img src="https://raw.githubusercontent.com/knisanth761-stack/sentinel-risk-engine/main/docs/images/stack/docker.svg" width="32" height="32"> **Docker** | Containerization and deployment |
+| <img src="https://raw.githubusercontent.com/knisanth761-stack/sentinel-risk-engine/main/docs/images/stack/git.svg" width="32" height="32"> **Git** | Version control |
+| <img src="https://raw.githubusercontent.com/knisanth761-stack/sentinel-risk-engine/main/docs/images/stack/github.svg" width="32" height="32"> **GitHub** | Repository hosting and collaboration |
