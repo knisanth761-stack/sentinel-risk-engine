@@ -62,13 +62,9 @@ export default function CommandCenter() {
     };
   }, []);
 
-  const transactionsScreened = runtime ? runtime.transactions.processed : summary.total;
-  const blockedCount = runtime ? runtime.transactions.block : summary.blockedCount;
-  const blockRate = runtime
-    ? runtime.transactions.processed > 0
-      ? runtime.transactions.block / runtime.transactions.processed
-      : 0
-    : summary.blockRate;
+  const transactionsScreened = summary.total;
+  const blockedCount = summary.blockedCount;
+  const blockRate = summary.blockRate;
 
   return (
     <div className="command-center">

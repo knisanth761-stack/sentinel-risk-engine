@@ -19,7 +19,7 @@ const {
 
 const ML_SERVICE_URL =
   process.env.ML_SERVICE_URL ||
-  "http://localhost:8000";
+  "http://ml:8000";
 
 const app = express();
 
