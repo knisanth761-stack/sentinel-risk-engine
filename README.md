@@ -22,21 +22,171 @@ The system processes each transaction through a complete risk pipeline and retur
 SAFE → REVIEW → SUSPICIOUS → BLOCK
 
 ✨ Key Features
-Real-time transaction risk analysis
-Hybrid rule-based + machine-learning fraud detection
-Configurable transaction risk signals
-Behavioral anomaly detection
-Transaction velocity detection
-Source balance depletion analysis
-Balance consistency checks
-High-risk transaction type detection
-Risk fusion between rules and ML predictions
-Human-readable fraud explanations
-SHAP-based ML feature explanations
-PostgreSQL transaction persistence
-Duplicate transaction detection
-ML service failure recovery
-Persisted transaction history
-Model telemetry and feature importance
-Live backend runtime telemetry
-Automated unit and integration testing
+1)Real-time transaction risk analysis
+2)Hybrid rule-based + machine-learning fraud detection
+3)Configurable transaction risk signals
+4)Behavioral anomaly detection
+5)Transaction velocity detection
+6)Source balance depletion analysis
+7)Balance consistency checks
+8)High-risk transaction type detection
+9)Risk fusion between rules and ML predictions
+10)Human-readable fraud explanations
+11)SHAP-based ML feature explanations
+12)PostgreSQL transaction persistence
+13)Duplicate transaction detection
+14)ML service failure recovery
+15)Persisted transaction history
+16)Model telemetry and feature importance
+17)Live backend runtime telemetry
+18)Automated unit and integration testing
+
+## 🏗️ System Architecture
+
+Sentinel Risk Engine uses a hybrid architecture that combines deterministic rule-based analysis, machine-learning fraud detection, risk fusion, explainability, persistent transaction storage, and a real-time React dashboard.
+
+![Sentinel Risk Engine Architecture](docs/images/Architecture.png)
+
+## 📊 Model Performance & Evaluation
+
+The fraud detection model was evaluated using an **untouched held-out test set** containing **123,580 transactions**.
+
+> **Evaluation approach:** The deployed XGBoost model artifact was loaded directly and evaluated without retraining. The held-out test set was not used during model training.
+
+### 🎯 Performance Metrics
+
+| Metric | Score |
+|---|---:|
+| **Precision** | **1.0000** |
+| **Recall** | **0.9994** |
+| **F1 Score** | **0.9997** |
+| **PR-AUC** | **1.0000** |
+| **ROC-AUC** | **1.0000** |
+| **False Positive Rate** | **0.000000** |
+
+### 🔍 Held-Out Test Results
+
+| Actual / Predicted | Legitimate | Fraud |
+|---|---:|---:|
+| **Legitimate** | 121,926 | 0 |
+| **Fraud** | 1 | 1,653 |
+
+- **True Positives:** 1,653
+- **True Negatives:** 121,926
+- **False Positives:** 0
+- **False Negatives:** 1
+- **Fraud Cases:** 1,654
+- **Fraud Detection Rate:** 99.94%
+
+### ⚠️ Evaluation Note
+
+These metrics were obtained from a held-out evaluation dataset and represent offline model performance. They should not be interpreted as a guarantee of identical production performance.
+
+## 💰 Business Impact
+
+The deployed model was also evaluated on the same untouched held-out test set to estimate potential fraud-loss prevention.
+
+### Fraud Amount Impact
+
+| Metric | Value |
+|---|---:|
+| **Total Fraud Exposure Evaluated** | 2,722,434,569.36 |
+| **Fraud Amount Detected** | 2,722,035,524.28 |
+| **Fraud Amount Missed** | 399,045.08 |
+| **Fraud Amount Prevention Rate** | **99.9853%** |
+| **Fraud Amount Leakage Rate** | **0.0147%** |
+| **Legitimate Amount Incorrectly Flagged** | **0** |
+
+### Operational Impact
+
+- **1,653 of 1,654 fraud cases detected**
+- **0 legitimate transactions incorrectly flagged**
+- Only **1 fraud case missed**
+- Strong fraud detection with minimal customer friction on the evaluated dataset
+
+> ⚠️ These figures represent performance on the held-out evaluation dataset and are not guaranteed production savings. Real-world results may vary depending on data distribution and transaction patterns.
+
+## 🔍 Explainable AI & Risk Reasoning
+
+Sentinel AI Risk Manager does not operate as a black-box fraud detector. Each transaction is analyzed using multiple layers of risk intelligence and returns human-readable reasons behind the final decision.
+
+### 🧠 Rule-Based Risk Signals
+
+The deterministic risk engine analyzes transaction patterns including:
+
+- High transaction amounts
+- High transaction velocity
+- Behavioral anomalies
+- Source account balance depletion
+- Source and destination balance inconsistencies
+- High-risk transaction types
+- Rapid cumulative spending
+
+Each detected signal contributes to the overall rule-based risk score.
+
+### 🤖 Machine Learning Explainability
+
+For transactions identified as suspicious by the ML model, Sentinel analyzes important fraud-driving features and converts them into understandable explanations.
+
+The explanation system can highlight patterns such as:
+
+- Unusual source-account balance patterns
+- Large movements from the source account
+- Transactions that significantly deplete account balances
+- Transaction amounts that are unusually large
+- Unusual destination balance changes
+- High amounts relative to account balances
+- Unusual transaction timing patterns
+
+### 🔗 Multi-Layer Risk Explanation
+
+The final explanation combines:
+
+**Rule Signals** → Deterministic risk patterns  
+**ML Feature Explanations** → Fraud-driving model features  
+**ML Confidence** → Probability of fraud  
+**Risk Fusion** → Final SAFE / REVIEW / SUSPICIOUS / BLOCK decision  
+
+Duplicate reasons are removed before the final explanation is returned to the user.
+
+### Example Decision Output
+
+```text
+Decision: BLOCK
+
+Reasons:
+• Transaction amount is unusually high
+• Transaction consumes almost the entire source account balance
+• Large TRANSFER transaction requires additional scrutiny
+• The machine-learning model assigns a high probability of fraud
+
+## 🛠️ Technology Stack
+
+<div align="center">
+
+<img src="docs/images/stack/react.svg" alt="React" width="60" height="60"/>
+<img src="docs/images/stack/vite.svg" alt="Vite" width="60" height="60"/>
+<img src="docs/images/stack/nodejs.svg" alt="Node.js" width="60" height="60"/>
+<img src="docs/images/stack/express.svg" alt="Express.js" width="60" height="60"/>
+<img src="docs/images/stack/python.svg" alt="Python" width="60" height="60"/>
+<img src="docs/images/stack/postgresql.svg" alt="PostgreSQL" width="60" height="60"/>
+<img src="docs/images/stack/docker.svg" alt="Docker" width="60" height="60"/>
+<img src="docs/images/stack/git.svg" alt="Git" width="60" height="60"/>
+<img src="docs/images/stack/github.svg" alt="GitHub" width="60" height="60"/>
+
+</div>
+
+<br>
+
+| Layer | Technologies |
+|---|---|
+| 🎨 **Frontend** | React, Vite |
+| ⚙️ **Backend API** | Node.js, Express |
+| 🤖 **Machine Learning** | Python, XGBoost |
+| 🧠 **Explainability** | SHAP |
+| 🗄️ **Database** | PostgreSQL |
+| 🐳 **Containerization** | Docker, Docker Compose |
+| 🧪 **Testing** | Node.js Test Runner |
+| 🔧 **Version Control** | Git, GitHub |
+
+
