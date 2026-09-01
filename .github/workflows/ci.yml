@@ -64,6 +64,7 @@ jobs:
           DB_NAME: sentinel
           DB_PASSWORD: postgres
           DB_PORT: 5432
+          ML_SERVICE_URL: http://127.0.0.1:8000
         run: |
           node backend/server.js > server.log 2>&1 &
           sleep 5
@@ -79,6 +80,7 @@ jobs:
           DB_NAME: sentinel
           DB_PASSWORD: postgres
           DB_PORT: 5432
+          ML_SERVICE_URL: http://127.0.0.1:8000
         run: npm run test:integration
 
       - name: Show service logs on failure
