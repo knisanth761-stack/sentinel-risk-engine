@@ -296,3 +296,83 @@ Explainability
 Final Decision
 SAFE / REVIEW / SUSPICIOUS / BLOCK
 ```
+
+## 🔌 API Endpoints
+
+The backend API runs on port `3000` by default.
+
+### Health Check
+
+```http
+GET /health
+```
+
+Returns the backend service status.
+
+**Example response:**
+
+```json
+{
+  "status": "UP",
+  "service": "Sentinel Risk Engine"
+}
+```
+
+### Process a Transaction
+
+```http
+POST /transactions
+```
+
+Validates, persists, and analyzes a transaction using the rule-based engine and machine-learning service.
+
+**Possible outcomes include:**
+
+```text
+SAFE
+REVIEW
+SUSPICIOUS
+BLOCK
+```
+
+### Transaction History
+
+```http
+GET /transactions/history
+```
+
+Returns persisted transaction history.
+
+An optional `limit` query parameter can be used:
+
+```http
+GET /transactions/history?limit=50
+```
+
+### Model Telemetry
+
+```http
+GET /model/telemetry
+```
+
+Returns model metadata, held-out evaluation results, and runtime telemetry information.
+
+## 🧪 Testing
+
+The project includes automated unit and integration tests covering core risk logic, API behavior, persistence, validation, and failure recovery.
+
+### Unit Tests
+
+```bash
+npm test
+```
+
+This runs the core risk engine and risk fusion tests.
+
+### Integration Tests
+
+```bash
+npm run test:integration
+```
+
+Integration tests cover API processing, transaction persistence, validation, duplicate handling, and failure recovery scenarios.
