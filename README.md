@@ -162,31 +162,18 @@ Reasons:
 
 ## 🛠️ Technology Stack
 
-<div align="center">
-
-<img src="docs/images/stack/react.svg" alt="React" width="60" height="60"/>
-<img src="docs/images/stack/vite.svg" alt="Vite" width="60" height="60"/>
-<img src="docs/images/stack/nodejs.svg" alt="Node.js" width="60" height="60"/>
-<img src="docs/images/stack/express.svg" alt="Express.js" width="60" height="60"/>
-<img src="docs/images/stack/python.svg" alt="Python" width="60" height="60"/>
-<img src="docs/images/stack/postgresql.svg" alt="PostgreSQL" width="60" height="60"/>
-<img src="docs/images/stack/docker.svg" alt="Docker" width="60" height="60"/>
-<img src="docs/images/stack/git.svg" alt="Git" width="60" height="60"/>
-<img src="docs/images/stack/github.svg" alt="GitHub" width="60" height="60"/>
-
-</div>
-
-<br>
-
-| Layer | Technologies |
+| Technology | Role |
 |---|---|
-| 🎨 **Frontend** | React, Vite |
-| ⚙️ **Backend API** | Node.js, Express |
-| 🤖 **Machine Learning** | Python, XGBoost |
-| 🧠 **Explainability** | SHAP |
-| 🗄️ **Database** | PostgreSQL |
-| 🐳 **Containerization** | Docker, Docker Compose |
-| 🧪 **Testing** | Node.js Test Runner |
-| 🔧 **Version Control** | Git, GitHub |
+| <img src="./docs/images/stack/react.svg" width="32" valign="middle"> **React** | Interactive frontend dashboard |
+| <img src="./docs/images/stack/vite.svg" width="32" valign="middle"> **Vite** | Frontend development and build tool |
+| <img src="./docs/images/stack/nodejs.svg" width="32" valign="middle"> **Node.js** | Backend runtime |
+| <img src="./docs/images/stack/express.svg" width="32" valign="middle"> **Express.js** | REST API framework |
+| <img src="./docs/images/stack/python.svg" width="32" valign="middle"> **Python** | Machine-learning service |
+| **XGBoost** | Fraud detection model |
+| **SHAP** | Model explainability |
+| <img src="./docs/images/stack/postgresql.svg" width="32" valign="middle"> **PostgreSQL** | Transaction and risk persistence |
+| <img src="./docs/images/stack/docker.svg" width="32" valign="middle"> **Docker** | Containerization and deployment |
+| <img src="./docs/images/stack/git.svg" width="32" valign="middle"> **Git** | Version control |
+| <img src="./docs/images/stack/github.svg" width="32" valign="middle"> **GitHub** | Repository hosting and collaboration |
 
 
