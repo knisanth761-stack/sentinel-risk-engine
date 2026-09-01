@@ -47,7 +47,7 @@ SAFE → REVIEW → SUSPICIOUS → BLOCK
 
 Sentinel Risk Engine uses a hybrid architecture that combines deterministic rule-based analysis, machine-learning fraud detection, risk fusion, explainability, persistent transaction storage, and a real-time React dashboard.
 
-![Sentinel Risk Engine Architecture](./docs/images/Architecture.png)
+![Sentinel Risk Engine Architecture](https://github.com/knisanth761-stack/sentinel-risk-engine/raw/main/docs/images/Architecture.png)
 
 ## 📊 Model Performance & Evaluation
 
