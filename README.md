@@ -376,3 +376,20 @@ npm run test:integration
 ```
 
 Integration tests cover API processing, transaction persistence, validation, duplicate handling, and failure recovery scenarios.
+
+## 📁 Project Structure
+
+```text
+sentinel-risk-engine/
+├── backend/              # API, risk engine, validation, telemetry, persistence
+├── db/                   # PostgreSQL schema
+├── docs/
+│   └── images/           # Architecture and dashboard visuals
+├── ml/                   # XGBoost fraud detection service
+├── sentinel-frontend/    # React frontend dashboard
+├── test/                 # Unit and integration tests
+├── docker-compose.yml    # Multi-service Docker orchestration
+├── Dockerfile            # Backend container configuration
+├── requirements.txt      # Python dependencies
+└── README.md
+```
