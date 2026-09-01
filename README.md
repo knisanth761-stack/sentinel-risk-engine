@@ -393,3 +393,16 @@ sentinel-risk-engine/
 ├── requirements.txt      # Python dependencies
 └── README.md
 ```
+
+## 🔮 Future Improvements
+
+Potential future enhancements include:
+
+- Real-time streaming transaction ingestion
+- Authentication and role-based access control
+- Production monitoring and alerting
+- Model retraining pipeline
+- Drift detection and model monitoring
+- Expanded fraud detection rules
+- Cloud deployment
+- Horizontal service scaling
