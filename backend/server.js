@@ -258,13 +258,20 @@ app.post("/transactions", async (req, res) => {
 
       // Persist failure so the transaction is not left stuck
       // in PROCESSING state.
-      await updateTransactionOutcome(
-        transaction.transactionId,
-        {
-          processingStatus: "FAILED",
-          failureReason: `ML Risk Service unavailable: ${mlError.message}`
-        }
-      );
+      try {
+        await updateTransactionOutcome(
+          transaction.transactionId,
+          {
+            processingStatus: "FAILED",
+            failureReason: `ML Risk Service unavailable: ${mlError.message}`
+          }
+        );
+      } catch (databaseError) {
+        console.error(
+          "Failed to persist ML failure:",
+          databaseError.message
+        );
+      }
 
       recordTransactionTelemetry({
         latencyMs: performance.now() - requestStartedAt,
